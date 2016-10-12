@@ -19,7 +19,7 @@ class ScrollingLinePlot:
   def __init__(self, axis, title, ymin=0, ymax=100, width=100, ylabel="Data"):
     self.axis = axis
     self.axis.set_title(title)
-    self.axis.set_xlabel("Time (s)")
+    self.axis.set_xlabel("Time")
     self.axis.set_ylabel(ylabel)
     self.axis.set_xlim(-width,0)
     self.axis.set_ylim(ymin, ymax)

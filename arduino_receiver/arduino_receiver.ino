@@ -32,10 +32,8 @@ void setup() {
     // set up the LCD's number of columns and rows:
     lcd.begin(20, 4);
   
-    lcd.createChar(0, checker);
     lcd.createChar(1, bad);
     lcd.createChar(2, good);
-    lcd.createChar(3, dots);
 }
 
 int val = 10;
@@ -63,10 +61,10 @@ void loop() {
               break;
             default:
               result = "Error";
-              decoder.DumpResults();
+              //decoder.DumpResults();
         }
     } else {
-        decoder.DumpResults();  //Show the results on serial monitor
+        //decoder.DumpResults();  //Show the results on serial monitor
     }
     receiver.resume();      //Restart the receiver
   }
@@ -79,8 +77,11 @@ void loop() {
         lcd.write(SYMBOL_GOOD);
     }
     lcd.print(result);
+    lcd.setCursor(0,1);
+    lcd.print(val);
     lcd.display();
   }
-  Serial.println(val);
-  delay(300);
+  Serial.print(val);
+  Serial.print("\n");
+  delay(200);
 }
