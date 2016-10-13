@@ -30,5 +30,5 @@ if __name__ == "__main__":
     try:
         basic_graph(arduino)
     except Exception as e:
-        #print e
+        # Close the serial port regardless of error condition
         arduino.close()

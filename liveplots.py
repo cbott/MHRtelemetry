@@ -3,15 +3,9 @@
 # of graphs that can have dynamic data in them
 #
 
-import argparse
-import numpy as np
-import random
-import sys
-
-from time import sleep
 from collections import deque
-
 import matplotlib.pyplot as plt 
+import random
 
 class ScrollingLinePlot:
   """ Creates a line plot that shows a fixed number of
@@ -21,8 +15,11 @@ class ScrollingLinePlot:
     self.axis.set_title(title)
     self.axis.set_xlabel("Time")
     self.axis.set_ylabel(ylabel)
+
+    # set x/y window range, prevents auto-scaling
     self.axis.set_xlim(-width,0)
     self.axis.set_ylim(ymin, ymax)
+
     self.data = deque([0]*width, maxlen = width)
     self.line = self.axis.plot(self.data)[0]
     self.line.set_data(range(-len(self.data)+1,1), self.data)
@@ -47,4 +44,6 @@ def line_plot_example():
         graph_b.append_data(i%10)
         plt.show()
         plt.pause(0.1)
-#line_plot_example()
+        
+if __name__ == "__main__":
+    line_plot_example()
