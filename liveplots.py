@@ -30,18 +30,38 @@ class ScrollingLinePlot:
     self.line.set_ydata(self.data)
 
 class BarChart:
-    pass
+    """ Single bar in a plot that can show a
+        changing height value """
+    def __init__(self, axis, title, ymin=0, ymax=100, ylabel="", color='r'):
+        self.axis = axis
+        self.axis.set_title(title)
+        self.axis.set_ylabel(ylabel)
+        self.axis.xaxis.set_visible(False)
+        self.axis.set_xlim(0, 10)
+        self.axis.set_ylim(ymin, ymax)
+        self.value = 0;
+        self.bar = self.axis.bar(
+            left = 1,
+            height = self.value,
+            width = 8,
+            color = color)[0]
+
+    def update(self, val):
+        self.value = val
+        self.bar.set_height(self.value)
 
 def line_plot_example():
     """ Graph random data to show what the library can do """
     fig, axes = plt.subplots(nrows = 1, ncols = 2)
+    fig.canvas.set_window_title("Example Plot")
     graph_a = ScrollingLinePlot(axes[0], "Graph A", 0, 100, 10)
-    graph_b = ScrollingLinePlot(axes[1], "Graph B", 0, 10, 20)
+    graph_b = BarChart(axes[1], "Graph B", ymin=0, ymax=10, 
+                       ylabel="Example value", color="#FF9000")
 
     plt.ion() #Make plot interactive
     for i in range(100):
         graph_a.append_data(random.randint(0,100))
-        graph_b.append_data(i%10)
+        graph_b.update(i/3%10)
         plt.show()
         plt.pause(0.1)
         

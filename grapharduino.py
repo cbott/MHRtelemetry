@@ -7,6 +7,7 @@ SERIAL_PORT = 'COM3'
 
 def basic_graph(arduino):
     fig, axes = plt.subplots(nrows = 1, ncols = 1)
+    fig.canvas.set_window_title("Example Plot")
     graph = ScrollingLinePlot(axes, title="Arduino Data", ymin=0, ymax=100, width=50)
 
     plt.ion() #Make plot interactive
