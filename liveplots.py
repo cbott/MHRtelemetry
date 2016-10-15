@@ -5,7 +5,14 @@
 
 from collections import deque
 import matplotlib.pyplot as plt 
+from matplotlib import mplDeprecation
 import random
+
+# matplotlib will throw a deprecation warning when using 
+# plt.pause() or plt.waitforbuttonpress(), this prevents
+# the warning from being printed to terminal
+import warnings
+warnings.filterwarnings("ignore", category=mplDeprecation)
 
 class ScrollingLinePlot:
   """ Creates a line plot that shows a fixed number of
@@ -59,11 +66,12 @@ def line_plot_example():
                        ylabel="Example value", color="#FF9000")
 
     plt.ion() #Make plot interactive
-    for i in range(100):
+    for i in range(10):
         graph_a.append_data(random.randint(0,100))
         graph_b.update(i/3%10)
         plt.show()
         plt.pause(0.1)
+    plt.waitforbuttonpress(-1)
         
 if __name__ == "__main__":
     line_plot_example()
