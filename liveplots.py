@@ -74,22 +74,15 @@ class Dial:
         self.axis.set_theta_direction(-1); #make theta increase clockwise
         self.min = ymin
         self.max = ymax
-        twopi = math.pi * 2
-        self.axis.xaxis.set_major_locator(ticker.MultipleLocator(twopi/18))
-        #self.axis.xaxis.set_minor_locator(ticker.MultipleLocator(3.14159/8))
-        #self.axis.xaxis.set_major_formatter(ticker.NullFormatter())
-        self.axis.set_xticklabels(['']+self.even_ticks(self.min, self.max, 12)+[''])#,minor=True)
+        self.axis.xaxis.set_major_locator(ticker.MultipleLocator(math.pi/9))
+        self.axis.set_xticklabels(['']+self._even_ticks(self.min, self.max, 12)+[''])#,minor=True)
 
         self.axis.set_title(title)
-
-        
-        img=mpimg.imread('spd.png')
-        self.axis.imshow(img)#, extent=(0,100,0,100)) # left, right, bottom, top
 
         self.value = 0
         self.line = self.axis.plot((0,self.value), (0,1), c=color, linewidth=3)[0]
 
-    def even_ticks(self, low, up, leng):
+    def _even_ticks(self, low, up, leng):
         step = ((up-low) * 1.0 / leng)
         return [int(round(low+i*step,0)) for i in range(leng+1)]
 
@@ -97,6 +90,24 @@ class Dial:
         self.value = float(val)
         theta = (self.value/(self.max-self.min))*4*math.pi/3.0
         self.line.set_data((0,theta), (0,1))
+
+class Text:
+    def __init__(self, row, col, window_size, rowspan=1, colspan=1, title="Text"):
+        self.axis = plt.subplot2grid(window_size, (row,col),
+                                 rowspan=rowspan, colspan=colspan)
+        self.axis.xaxis.set_visible(False)
+        self.axis.yaxis.set_visible(False)
+        #self.axis.axis('off')
+        self.axis.spines['top'].set_visible(False)
+        self.axis.spines['right'].set_visible(False)
+        self.axis.spines['bottom'].set_visible(False)
+        self.axis.spines['left'].set_visible(False)
+        self.axis.set_ylim(0, 4)
+        self.axis.set_xlim(0, 10)
+        self.text = self.axis.text(0,3,"Hello", fontsize=20)
+
+    def update(self, text):
+        self.text.set_text(text)
 
 def plot_example():
     """ Graph random data to show what the library can do """
@@ -108,12 +119,14 @@ def plot_example():
     graph_b = BarChart(row=0, col=1, window_size=dim, title="Graph B", 
                        ymin=0, ymax=10, ylabel="Example value", color="#AA00AA")
     graph_c = Dial(row=1, col=0, window_size=dim, title="Graph C", ymin=0, ymax=25)
+    graph_d = Text(row=1, col=1, window_size=dim, title="Graph D")
     plt.tight_layout()
     plt.ion() #Make plot interactive
     for i in range(100):
         graph_a.append_data(random.randint(0,100))
         graph_b.update(i/3%10)
         graph_c.update((i%50)*(i%50<=25)+(50-i%50)*((i%50)>25))
+        graph_d.update(i)
         plt.show()
         plt.pause(0.1)
     plt.pause(-1)
