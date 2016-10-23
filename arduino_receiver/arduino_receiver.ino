@@ -6,11 +6,11 @@
 #define BTN_LEFT 0x1FE807F
 #define BTN_RIGHT 0x1FEC03F
 #define BTN_DOWN 0x1FEA05F
+#define BTN_VOL_DOWN 0x1FEE01F
+#define BTN_VOL_UP 0x1FE906F
 
-#define SYMBOL_CHECKER byte(0)
 #define SYMBOL_BAD byte(1)
 #define SYMBOL_GOOD byte(2)
-#define SYMBOL_DOTS byte(3)
 
 const int SIGNAL_PIN = 6;
 
@@ -36,7 +36,8 @@ void setup() {
     lcd.createChar(2, good);
 }
 
-int val = 10;
+int val1 = 10;
+int val2 = 1;
 void loop() {
     String result = "None";
   if (receiver.GetResults(&decoder)) {
@@ -45,19 +46,27 @@ void loop() {
         switch(decoder.value){
             case BTN_UP:
               result = "Up";
-              val += 10;
+              val1 += 10;
               break;
             case BTN_DOWN:
               result = "Down";
-              val -= 10;
+              val1 -= 10;
               break;
             case BTN_LEFT:
               result = "Left";
-              val -= 1;
+              val1 -= 1;
               break;
             case BTN_RIGHT:
               result = "Right";
-              val += 1;
+              val1 += 1;
+              break;
+            case BTN_VOL_UP:
+              result = "Vol +";
+              val2 += 1;
+              break;
+            case BTN_VOL_DOWN:
+              result = "Vol -";
+              val2 -= 1;
               break;
             default:
               result = "Error";
@@ -78,10 +87,14 @@ void loop() {
     }
     lcd.print(result);
     lcd.setCursor(0,1);
-    lcd.print(val);
+    lcd.print(val1);
+    lcd.setCursor(0,2);
+    lcd.print(val2);
     lcd.display();
   }
-  Serial.print(val);
+  Serial.print(val1);
+  Serial.print(":");
+  Serial.print(val2);
   Serial.print("\n");
   delay(200);
 }
