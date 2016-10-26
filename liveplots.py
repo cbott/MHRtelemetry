@@ -2,6 +2,7 @@
 # This is a wrapper on some matplotlib functions to allow easy creation
 # of graphs that can have dynamic data in them
 #
+# Author: Colin Bott
 
 from collections import deque
 import matplotlib.pyplot as plt
@@ -18,11 +19,26 @@ import random
 import warnings
 warnings.filterwarnings("ignore", category=mplDeprecation)
 
+def liveplot_init(rows, cols, title="LivePlot Window"):
+    """ Initialize the Matplotlib window """
+    global window_size
+    fig = plt.figure()
+    fig.canvas.set_window_title(title)
+    window_size = (rows, cols)
+
+    plt.ion() #Make plot interactive
+
+def liveplot_update(time=0.2):
+    """ Show graphs with updated data and delay """
+    plt.tight_layout() # really only needs to be called once
+    plt.show()
+    plt.pause(time)
+
 class ScrollingLinePlot:
   """ Creates a line plot that shows a fixed number of
       data points at a time, scrolling right to left """
-  def __init__(self, row, col, window_size, rowspan=1, colspan=1,
-               title="Line Plot", ymin=0, ymax=100, width=100, ylabel="Data"):
+  def __init__(self, row, col, rowspan=1, colspan=1, title="Line Plot",
+               ymin=0, ymax=100, width=100, ylabel="Data"):
     self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan)
     self.axis.set_title(title)
@@ -37,7 +53,7 @@ class ScrollingLinePlot:
     self.line = self.axis.plot(self.data)[0]
     self.line.set_data(range(-len(self.data)+1,1), self.data)
 
-  def append_data(self, val):
+  def update(self, val):
     """ Add data and update the graph """
     self.data.append(val) # deque automatically truncates to [width] values
     self.line.set_ydata(self.data)
@@ -45,7 +61,7 @@ class ScrollingLinePlot:
 class BarChart:
     """ Single bar in a plot that can show a
         changing height value """
-    def __init__(self, row, col, window_size, rowspan=1, colspan=1, title="Bar Chart", ymin=0, ymax=100, ylabel="", color='r'):
+    def __init__(self, row, col, rowspan=1, colspan=1, title="Bar Chart", ymin=0, ymax=100, ylabel="", color='r'):
         self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan)
         self.axis.set_title(title)
@@ -65,7 +81,7 @@ class BarChart:
         self.bar.set_height(self.value)
 
 class Dial:
-    def __init__(self, row, col, window_size, rowspan=1, colspan=1,
+    def __init__(self, row, col, rowspan=1, colspan=1,
                  title="Dial", ymin=0, ymax=100, color='r'):
         self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan, projection='polar')
@@ -94,7 +110,7 @@ class Dial:
         self.line.set_data((0,theta), (0,1))
 
 class Text:
-    def __init__(self, row, col, window_size, rowspan=1, colspan=1, title="Text"):
+    def __init__(self, row, col, rowspan=1, colspan=1, title="Text"):
         self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan)
         self.axis.set_title(title)
@@ -115,27 +131,23 @@ class Text:
 
 def plot_example():
     """ Graph random data to show what the library can do """
-    fig = plt.figure()
-    fig.canvas.set_window_title("Example Plot")
-    dim = (2,2) # The window will have 2 rows and 2 columns of axes
-    graph_a = ScrollingLinePlot(row=0, col=0, window_size=dim,
-                                title="Graph A", ymin=0, ymax=100, width=10)
-    graph_b = BarChart(row=0, col=1, window_size=dim, title="Graph B", 
-                       ymin=0, ymax=10, ylabel="Example value", color="#AA00AA")
-    graph_c = Dial(row=1, col=0, window_size=dim, title="Graph C", ymin=0, ymax=25)
-    graph_d = Text(row=1, col=1, window_size=dim, title="Graph D")
-    plt.tight_layout()
-    plt.ion() #Make plot interactive
+    liveplot_init(2,2,"LivePlot Example")
+    graph_a = ScrollingLinePlot(row=0, col=0, title="Graph A",
+                                ymin=0, ymax=100, width=10)
+    graph_b = BarChart(row=0, col=1, title="Graph B", ymin=0,
+                       ymax=10, ylabel="Example value", color="#AA00AA")
+    graph_c = Dial(row=1, col=0, title="Graph C", ymin=0, ymax=25)
+    graph_d = Text(row=1, col=1, title="Graph D")
+    
     for i in range(100):
-        graph_a.append_data(random.randint(0,100))
+        graph_a.update(random.randint(0,100))
         graph_b.update(i/3%10)
         graph_c.update((i%50)*(i%50<=25)+(50-i%50)*((i%50)>25))
         if(i%10 == 0):
             graph_d.update(i, 'r')
         else:
             graph_d.update(i)
-        plt.show()
-        plt.pause(0.1)
+        liveplot_update(0.1)
     plt.pause(-1)
     #plt.waitforbuttonpress(-1)
         
