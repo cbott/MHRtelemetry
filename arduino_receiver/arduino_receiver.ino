@@ -1,4 +1,3 @@
-#include <LiquidCrystal.h>
 #include <IRLib.h>
 
 #define PROTOCOL NEC
@@ -8,68 +7,73 @@
 #define BTN_DOWN 0x1FEA05F
 #define BTN_VOL_DOWN 0x1FEE01F
 #define BTN_VOL_UP 0x1FE906F
+#define BTN_POWER 0x1FE7887
+#define BTN_SETUP 0x1FE48B7
 
-#define SYMBOL_BAD byte(1)
-#define SYMBOL_GOOD byte(2)
-
-const int SIGNAL_PIN = 6;
+const int SIGNAL_PIN = 8;
+const int GND_PIN = 9;
+const int POWER_PIN = 10;
 
 IRrecv receiver(SIGNAL_PIN);
 IRdecode decoder;
-LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
-
-byte bad[8] = {
- 0b0,0b11011,0b1110,0b100,0b1110,0b11011,0b0,0b0
-};
-byte good[8] = {
-    0b00000,0b00000,0b00001,0b00010,0b10100,0b01000,0b00000,0b00000
-};
 
 void setup() {
     Serial.begin(9600);
     receiver.enableIRIn();
-
-    // set up the LCD's number of columns and rows:
-    lcd.begin(20, 4);
-  
-    lcd.createChar(1, bad);
-    lcd.createChar(2, good);
+    pinMode(GND_PIN, OUTPUT);
+    pinMode(POWER_PIN, OUTPUT);
+    digitalWrite(GND_PIN, LOW);
+    digitalWrite(POWER_PIN, HIGH);
 }
 
-int val1 = 10;
-int val2 = 1;
+int rpm = 0;
+int temp = 0;
+int speed = 0;
+
 void loop() {
-    String result = "None";
+  String result = "";
   if (receiver.GetResults(&decoder)) {
     decoder.decode();       //Decode the data
     if(decoder.decode_type == NEC){
         switch(decoder.value){
             case BTN_UP:
-              result = "Up";
-              val1 += 10;
+              speed += 10;
+              result.concat("Speed:");
+              result.concat(speed);
               break;
             case BTN_DOWN:
-              result = "Down";
-              val1 -= 10;
+              speed -= 10;
+              result.concat("Speed:");
+              result.concat(speed);
               break;
             case BTN_LEFT:
-              result = "Left";
-              val1 -= 1;
+              rpm -= 100;
+              result.concat("RPM:");
+              result.concat(rpm);
               break;
             case BTN_RIGHT:
-              result = "Right";
-              val1 += 1;
+              rpm += 100;
+              result.concat("RPM:");
+              result.concat(rpm);
               break;
             case BTN_VOL_UP:
-              result = "Vol +";
-              val2 += 1;
+              temp += 10;
+              result.concat("Temp:");
+              result.concat(temp);
               break;
             case BTN_VOL_DOWN:
-              result = "Vol -";
-              val2 -= 1;
+              temp -= 10;
+              result.concat("Temp:");
+              result.concat(temp);
+              break;
+            case BTN_POWER:
+              result.concat("-- Power");
+              break;
+            case BTN_SETUP:
+              result.concat("-- Clear");
               break;
             default:
-              result = "Error";
+              result.concat(decoder.value);
               //decoder.DumpResults();
         }
     } else {
@@ -77,24 +81,9 @@ void loop() {
     }
     receiver.resume();      //Restart the receiver
   }
-  
-  if(result != "None"){
-    lcd.clear();
-    if(result == "Error"){
-        lcd.write(SYMBOL_BAD);
-    } else {
-        lcd.write(SYMBOL_GOOD);
-    }
-    lcd.print(result);
-    lcd.setCursor(0,1);
-    lcd.print(val1);
-    lcd.setCursor(0,2);
-    lcd.print(val2);
-    lcd.display();
+  if(result != ""){
+    Serial.print(result);
+    Serial.print("\n");
   }
-  Serial.print(val1);
-  Serial.print(":");
-  Serial.print(val2);
-  Serial.print("\n");
-  delay(200);
+  delay(50);
 }

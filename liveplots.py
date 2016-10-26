@@ -21,7 +21,8 @@ warnings.filterwarnings("ignore", category=mplDeprecation)
 class ScrollingLinePlot:
   """ Creates a line plot that shows a fixed number of
       data points at a time, scrolling right to left """
-  def __init__(self, row, col, window_size, rowspan=1, colspan=1, title="Line Plot", ymin=0, ymax=100, width=100, ylabel="Data"):
+  def __init__(self, row, col, window_size, rowspan=1, colspan=1,
+               title="Line Plot", ymin=0, ymax=100, width=100, ylabel="Data"):
     self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan)
     self.axis.set_title(title)
@@ -64,7 +65,8 @@ class BarChart:
         self.bar.set_height(self.value)
 
 class Dial:
-    def __init__(self, row, col, window_size, rowspan=1, colspan=1, title="Dial", ymin=0, ymax=100, color='r'):
+    def __init__(self, row, col, window_size, rowspan=1, colspan=1,
+                 title="Dial", ymin=0, ymax=100, color='r'):
         self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan, projection='polar')
         self.axis.set_ylim(0,1)
@@ -95,6 +97,7 @@ class Text:
     def __init__(self, row, col, window_size, rowspan=1, colspan=1, title="Text"):
         self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan)
+        self.axis.set_title(title)
         self.axis.xaxis.set_visible(False)
         self.axis.yaxis.set_visible(False)
         #self.axis.axis('off')
@@ -102,12 +105,13 @@ class Text:
         self.axis.spines['right'].set_visible(False)
         self.axis.spines['bottom'].set_visible(False)
         self.axis.spines['left'].set_visible(False)
-        self.axis.set_ylim(0, 4)
-        self.axis.set_xlim(0, 10)
-        self.text = self.axis.text(0,3,"Hello", fontsize=20)
+        self.axis.set_ylim(0, 1)
+        self.axis.set_xlim(0, 1)
+        self.text = self.axis.text(0,1,"", fontsize=20, va='top', wrap=True)
 
-    def update(self, text):
+    def update(self, text, color='k'):
         self.text.set_text(text)
+        self.text.set_color(color)
 
 def plot_example():
     """ Graph random data to show what the library can do """
@@ -126,7 +130,10 @@ def plot_example():
         graph_a.append_data(random.randint(0,100))
         graph_b.update(i/3%10)
         graph_c.update((i%50)*(i%50<=25)+(50-i%50)*((i%50)>25))
-        graph_d.update(i)
+        if(i%10 == 0):
+            graph_d.update(i, 'r')
+        else:
+            graph_d.update(i)
         plt.show()
         plt.pause(0.1)
     plt.pause(-1)

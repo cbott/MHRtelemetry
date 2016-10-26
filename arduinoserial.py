@@ -15,8 +15,8 @@ class Arduino:
             self.ser = serial.Serial(self.port, self.baudrate)
         except:
             self.ser = None
-            print "Unable to open serial port [%s]: \
-                   Check that the Arduino is plugged in"%self.port
+            print "Unable to open serial port [%s]: " \
+                   "Check that the Arduino is plugged in"%self.port
 
     def is_open(self):
         return self.ser is not None
