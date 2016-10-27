@@ -1,10 +1,12 @@
 
 from arduinoserial import Arduino
 from liveplots import *
+from time import strftime
 
 SERIAL_PORT = 'COM3'
+LOG_FILE = "TelemetryData.txt"
 
-def basic_graph(arduino):
+def basic_graph(arduino, log):
     liveplot_init(2,3, "MHR Telemetry Data")
 
     rpm = Dial(row=0, col=0, title="Engine RPM", ymin=0, ymax=6000)
@@ -29,13 +31,16 @@ def basic_graph(arduino):
         speed.update(data["Speed"])
         error_state.update("Error State " + data["Error"])
 
+        log.write(strftime("[%H:%M:%S] ") + str(data) + "\n")
+
         liveplot_update(0.2)
 
 if __name__ == "__main__":
     arduino = Arduino(SERIAL_PORT)
+    log = open(LOG_FILE, 'a')
+    log.write(strftime(">> BEGIN LOG << %m/%d/%y at %I:%M %p\n"))
     try:
-        basic_graph(arduino)
-    except Exception as e:
-        # Close the serial port regardless of error condition
-        print e
+        basic_graph(arduino, log)
+    finally:
         arduino.close()
+        log.close()
