@@ -1,4 +1,4 @@
-
+#grapharduino.py
 from arduinoserial import Arduino
 from liveplots import *
 from time import strftime
@@ -41,6 +41,9 @@ if __name__ == "__main__":
     log.write(strftime(">> BEGIN LOG << %m/%d/%y at %I:%M %p\n"))
     try:
         basic_graph(arduino, log)
+    except BaseException as e:
+        print(e)
     finally:
+        #run cleanup procedures when application closes
         arduino.close()
         log.close()

@@ -44,3 +44,4 @@ class Arduino:
             self.ser = None
         else:
             print "No open serial connection"
+            
