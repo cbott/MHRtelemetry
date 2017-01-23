@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #
 # This is a wrapper on some matplotlib functions to allow easy creation
 # of graphs that can have dynamic data in them
