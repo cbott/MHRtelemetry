@@ -7,6 +7,8 @@ void setup() {
   for(int i=0; i<SIZE; ++i){
     x[i] = i;
   }
+
+  pinMode(13, OUTPUT);
 }
 
 void loop() {
@@ -14,7 +16,8 @@ void loop() {
     Serial1.write(x[i]);
   }
   Serial1.write(TERM);
+  digitalWrite(13, x[1] % 2 == 0);
   ++x[1];
   if(x[1] == 255) ++x[1];
-  delay(200);
+  delay(random(50, 500));
 }
