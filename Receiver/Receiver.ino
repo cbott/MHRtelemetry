@@ -1,89 +1,74 @@
-#include <IRLib.h>
+// Receiver.ino
 
-#define PROTOCOL NEC
-#define BTN_UP 0x1FE58A7
-#define BTN_LEFT 0x1FE807F
-#define BTN_RIGHT 0x1FEC03F
-#define BTN_DOWN 0x1FEA05F
-#define BTN_VOL_DOWN 0x1FEE01F
-#define BTN_VOL_UP 0x1FE906F
-#define BTN_POWER 0x1FE7887
-#define BTN_SETUP 0x1FE48B7
+#include <SPI.h>
+#include <RH_RF95.h>
 
-const int SIGNAL_PIN = 8;
-const int GND_PIN = 9;
-const int POWER_PIN = 10;
+// for feather m0  
+#define RFM95_CS 8
+#define RFM95_RST 4
+#define RFM95_INT 3
 
-IRrecv receiver(SIGNAL_PIN);
-IRdecode decoder;
+#define RF95_FREQ 915.0
 
-void setup() {
-    Serial.begin(9600);
-    receiver.enableIRIn();
-    pinMode(GND_PIN, OUTPUT);
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(GND_PIN, LOW);
-    digitalWrite(POWER_PIN, HIGH);
+RH_RF95 rf95(RFM95_CS, RFM95_INT);
+
+#define LED 13
+
+void setup() 
+{
+  pinMode(LED, OUTPUT);     
+  pinMode(RFM95_RST, OUTPUT);
+  digitalWrite(RFM95_RST, HIGH);
+
+  Serial.begin(9600);
+
+  Serial.println("Telemetry Receiver:");
+  
+  digitalWrite(RFM95_RST, LOW);
+  delay(10);
+  digitalWrite(RFM95_RST, HIGH);
+  delay(10);
+
+  while (!rf95.init()) {
+    Serial.println("LoRa radio init failed");
+    while (1);
+  }
+  Serial.println("LoRa radio init OK!");
+
+  // Defaults after init are 434.0MHz, modulation GFSK_Rb250Fd250, +13dbM
+  if (!rf95.setFrequency(RF95_FREQ)) {
+    Serial.println("setFrequency failed");
+    while (1);
+  }
+  Serial.print("Set Freq to: "); Serial.println(RF95_FREQ);
+
+  // The default transmitter power is 13dBm, using PA_BOOST.
+  // If you are using RFM95/96/97/98 modules which uses the PA_BOOST transmitter pin, then 
+  // you can set transmitter powers from 5 to 23 dBm:
+  rf95.setTxPower(23, false);
 }
 
-int rpm = 0;
-int temp = 0;
-int speed = 0;
-
-void loop() {
-  String result = "";
-  if (receiver.GetResults(&decoder)) {
-    decoder.decode();       //Decode the data
-    if(decoder.decode_type == NEC){
-        switch(decoder.value){
-            case BTN_UP:
-              speed += 10;
-              result.concat("Speed:");
-              result.concat(speed);
-              break;
-            case BTN_DOWN:
-              speed -= 10;
-              result.concat("Speed:");
-              result.concat(speed);
-              break;
-            case BTN_LEFT:
-              rpm -= 100;
-              result.concat("RPM:");
-              result.concat(rpm);
-              break;
-            case BTN_RIGHT:
-              rpm += 100;
-              result.concat("RPM:");
-              result.concat(rpm);
-              break;
-            case BTN_VOL_UP:
-              temp += 10;
-              result.concat("Temp:");
-              result.concat(temp);
-              break;
-            case BTN_VOL_DOWN:
-              temp -= 10;
-              result.concat("Temp:");
-              result.concat(temp);
-              break;
-            case BTN_POWER:
-              result.concat("-- Power");
-              break;
-            case BTN_SETUP:
-              result.concat("-- Clear");
-              break;
-            default:
-              result.concat(decoder.value);
-              //decoder.DumpResults();
-        }
-    } else {
-        //decoder.DumpResults();  //Show the results on serial monitor
+void loop()
+{
+  if (rf95.available())
+  {
+    // Should be a message for us now   
+    uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+    uint8_t len = sizeof(buf);
+    
+    if (rf95.recv(buf, &len))
+    {
+      //RH_RF95::printBuffer("Received: ", buf, len);
+      digitalWrite(13, buf[1] % 2 == 0);
+      Serial.print("\nReceived:");
+      for(int i=0; i<len; ++i){
+        Serial.print(buf[i]);
+        Serial.print(" ");
+      }
     }
-    receiver.resume();      //Restart the receiver
+    else
+    {
+      Serial.println("Receive failed");
+    }
   }
-  if(result != ""){
-    Serial.print(result);
-    Serial.print("\n");
-  }
-  delay(50);
 }

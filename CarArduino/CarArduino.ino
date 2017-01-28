@@ -19,5 +19,5 @@ void loop() {
   digitalWrite(13, x[1] % 2 == 0);
   ++x[1];
   if(x[1] == 255) ++x[1];
-  delay(random(50, 500));
+  delay(random(100, 500));
 }
