@@ -4,23 +4,27 @@ from arduinoserial import Arduino
 from liveplots import *
 from time import strftime
 
-SERIAL_PORT = 'COM5'
+SIZE = 16 #Expected packet length
+
+SERIAL_PORT = 'COM8'
 LOG_FILE = "TelemetryData.txt"
 
 def basic_graph(arduino, log):
     liveplot_init(1,1, "MHR Telemetry Data")
 
-    pot = Dial(row=0, col=0, title="Potentiometer", ymin=0, ymax=100)
-    data = 0;
+    gui = Dial(row=0, col=0, title="Data [0]", ymin=0, ymax=256)
+    data = [ 0 for i in range(SIZE) ];
     while 1:
         for val in arduino.read():
             try:
-                data = int(val)
+                vals = val.split()
+                data = map(int, vals)
                 print(data)
             except (AttributeError, ValueError):
                 print "Received unexpected data [",val,"]"
-        pot.update(data)
-        log.write(strftime("[%H:%M:%S] ") + str(data) + "\n")
+        if len(data) == SIZE:
+            gui.update(data[0])
+            log.write(strftime("[%H:%M:%S] ") + str(data) + "\n")
         liveplot_update(0.1)
     
     # rpm = Dial(row=0, col=0, title="Engine RPM", ymin=0, ymax=6000)

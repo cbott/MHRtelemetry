@@ -1,4 +1,5 @@
 // Receiver.ino
+// Runs on LoRa board connected to monitoring computer
 
 #include <SPI.h>
 #include <RH_RF95.h>
@@ -60,7 +61,7 @@ void loop()
     {
       //RH_RF95::printBuffer("Received: ", buf, len);
       digitalWrite(13, buf[1] % 2 == 0);
-      Serial.print("\nReceived:");
+      Serial.print("\n");
       for(int i=0; i<len; ++i){
         Serial.print(buf[i]);
         Serial.print(" ");

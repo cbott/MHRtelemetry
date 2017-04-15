@@ -1,4 +1,6 @@
 //CarTransmitter.ino
+// Runs on LoRa board on car
+
 #include <SPI.h>
 #include <RH_RF95.h>
 
@@ -9,14 +11,14 @@
 
 #define RF95_FREQ 915.0
 
-const int SIZE = 10;
+const int SIZE = 16;
 const char TERM = 255;
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
 void setup() {
-  Serial.begin(9600);           // start serial for output
-  Serial1.begin(9600);
+  //Serial.begin(9600);           // start serial for output
+  Serial1.begin(115200);
 
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
@@ -58,7 +60,7 @@ void loop() {
       //Serial.print(x[i], DEC);
       //Serial.print(" ");
     }
-    digitalWrite(13, x[1] % 2 == 0);
+    digitalWrite(13, x[0] % 2 == 0);
 
     // Send the packet over radio
     rf95.send((uint8_t *)x, SIZE);
