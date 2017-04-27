@@ -83,7 +83,7 @@ class BarChart:
 
 class Dial:
     def __init__(self, row, col, rowspan=1, colspan=1,
-                 title="Dial", ymin=0, ymax=100, color='r'):
+                 title="Dial", ymin=0, ymax=100, ticks=9, color='r'):
         self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan, projection='polar')
         self.axis.set_ylim(0,1)
@@ -93,8 +93,11 @@ class Dial:
         self.axis.set_theta_direction(-1); #make theta increase clockwise
         self.min = ymin
         self.max = ymax
-        self.axis.xaxis.set_major_locator(ticker.MultipleLocator(math.pi/9))
-        self.axis.set_xticklabels(['']+self._even_ticks(self.min, self.max, 12)+[''])#,minor=True)
+
+        tick_num = ticks - 1
+        tick_spacing = tick_num * 0.75
+        self.axis.xaxis.set_major_locator(ticker.MultipleLocator(math.pi/tick_spacing))
+        self.axis.set_xticklabels(['']+self._even_ticks(self.min, self.max, tick_num)+[''])#,minor=True)
 
         self.axis.set_title(title)
 

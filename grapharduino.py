@@ -4,15 +4,18 @@ from arduinoserial import Arduino
 from liveplots import *
 from time import strftime
 
-SIZE = 16 #Expected packet length
+SIZE = 4 #Expected packet length
 
-SERIAL_PORT = 'COM8'
+SERIAL_PORT = 'COM12'
 LOG_FILE = "TelemetryData.txt"
 
 def basic_graph(arduino, log):
-    liveplot_init(1,1, "MHR Telemetry Data")
+    liveplot_init(2,1, "MHR Telemetry Data")
 
-    gui = Dial(row=0, col=0, title="Data [0]", ymin=0, ymax=256)
+    speedometer = Dial(row=0, col=0, title="Car Speed (MPH)", ymin=0, ymax=80, ticks=9)
+    readout = Text(row=1, col=0, title="")
+    topspeed = -100
+
     data = [ 0 for i in range(SIZE) ];
     while 1:
         for val in arduino.read():
@@ -23,8 +26,11 @@ def basic_graph(arduino, log):
             except (AttributeError, ValueError):
                 print "Received unexpected data [",val,"]"
         if len(data) == SIZE:
-            gui.update(data[0])
             log.write(strftime("[%H:%M:%S] ") + str(data) + "\n")
+            mph = data[0]/2.0
+            speedometer.update(mph)
+            topspeed = max(topspeed, mph)
+            readout.update("Current Speed: "+str(mph)+" MPH\nTop Speed:       "+str(topspeed)+" MPH")
         liveplot_update(0.1)
     
     # rpm = Dial(row=0, col=0, title="Engine RPM", ymin=0, ymax=6000)

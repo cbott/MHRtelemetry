@@ -49,6 +49,7 @@ void setup()
   rf95.setTxPower(23, false);
 }
 
+bool ledstate = 1;
 void loop()
 {
   if (rf95.available())
@@ -60,7 +61,8 @@ void loop()
     if (rf95.recv(buf, &len))
     {
       //RH_RF95::printBuffer("Received: ", buf, len);
-      digitalWrite(13, buf[1] % 2 == 0);
+      digitalWrite(13, ledstate);
+      ledstate = !ledstate;
       Serial.print("\n");
       for(int i=0; i<len; ++i){
         Serial.print(buf[i]);
