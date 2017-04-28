@@ -13,11 +13,9 @@
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
-#define LED 13
-
 void setup() 
 {
-  pinMode(LED, OUTPUT);     
+  pinMode(13, OUTPUT);     
   pinMode(RFM95_RST, OUTPUT);
   digitalWrite(RFM95_RST, HIGH);
 
@@ -63,11 +61,11 @@ void loop()
       //RH_RF95::printBuffer("Received: ", buf, len);
       digitalWrite(13, ledstate);
       ledstate = !ledstate;
-      Serial.print("\n");
       for(int i=0; i<len; ++i){
         Serial.print(buf[i]);
         Serial.print(" ");
       }
+      Serial.print("\n");
     }
     else
     {
