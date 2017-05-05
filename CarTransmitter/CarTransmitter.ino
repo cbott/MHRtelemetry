@@ -11,7 +11,7 @@
 
 #define RF95_FREQ 915.0
 
-const int SIZE = 13;
+const int SIZE = 15;
 const char TERM = 255;
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
@@ -46,18 +46,9 @@ void setup() {
 
 uint8_t transmit_data[SIZE];
 void loop() {
-  /*
   while(Serial1.available() <= SIZE){}
   byte serial_buf[SIZE+1];
   byte chars_read = Serial1.readBytesUntil(TERM, serial_buf, SIZE+1);
-  */
-  byte chars_read = 13;
-  byte serial_buf[13];
-
-  for(int i=0; i<13; ++i){
-    serial_buf[i] = random(100);
-  }
-  delay(1000);
   if(chars_read == SIZE){
     // Successful read. Copy temporary buffer into data array
     //Serial.print("\nReceived:");
@@ -73,4 +64,41 @@ void loop() {
     rf95.waitPacketSent();
   }
 }
+
+//////////////////////////////////////////////////////////////////////
+//-------------------------- Testing Loop --------------------------//
+//////////////////////////////////////////////////////////////////////
+// Send Fake Data
+//unsigned char val0to100 = 0;
+//unsigned char val0to255 = 0;
+//bool valbool = 0;
+//void loop() {
+//  uint8_t serial_buf[] = {val0to255, 0, 0, val0to100, val0to100,
+//                     val0to100, val0to255, val0to255, val0to255,
+//                     val0to255, val0to100, valbool, val0to100,
+//                     valbool, val0to100};
+//  
+//  if(1){
+//    // Successful read. Copy temporary buffer into data array
+//    //Serial.print("\nReceived:");
+//    for(int i=0; i<SIZE; ++i){
+//      transmit_data[i] = serial_buf[i];
+//      //Serial.print(transmit_data[i], DEC);
+//      //Serial.print(" ");
+//    }
+//
+//    // Send the packet over radio
+//    rf95.send(transmit_data, SIZE);
+//    //delay(10);
+//    rf95.waitPacketSent();
+//
+//    val0to255++;
+//    val0to100++;
+//    if(val0to100 > 100){
+//      val0to100 = 0;
+//    }
+//    valbool = !valbool;
+//    delay(1000);
+//  }
+//}
 

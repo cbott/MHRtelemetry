@@ -73,3 +73,52 @@ void loop()
     }
   }
 }
+
+
+
+//////////////////////////////////////////////////////////////////////
+//----------------------- Demonstration Loop -----------------------//
+//////////////////////////////////////////////////////////////////////
+// Send realistic data to demonstrate telemetry capabilities
+//byte engine_t = 150;
+//byte l_bat_t = 0;
+//byte r_bat_t = 0;
+//float l_bat_soc = 100;
+//float r_bat_soc = 100;
+//byte rpm = 20;
+//byte l_motor_t = 80;
+//byte r_motor_t = 80;
+//byte l_mc_t = 50;
+//byte r_mc_t = 50;
+//byte accel =  0;
+//byte accel_err = 0;
+//byte brake = 25;
+//byte brake_err = 0;
+//float lv_soc = 127;
+//
+//void loop() {
+//  uint8_t serial_buf[] = {engine_t, l_bat_t, r_bat_t, l_bat_soc, r_bat_soc,
+//                          rpm, l_motor_t, r_motor_t, l_mc_t, r_mc_t,
+//                          accel, accel_err, brake, brake_err, lv_soc};
+//
+//  // Send data over serial
+//  for(int i=0; i<15; ++i){
+//    Serial.print(serial_buf[i]);
+//    Serial.print(" ");
+//  }
+//  Serial.print("\n");
+//
+//  delay(500);
+//
+//  // Update the values realistically
+//  engine_t += random(-1,2);
+//  l_bat_soc -= 0.1;
+//  r_bat_soc -= 0.1;
+//  rpm += random(-4,5);
+//  l_motor_t += random(-2,3);
+//  r_motor_t += random(-2,3);
+//  l_mc_t += random(-2,3);
+//  r_mc_t += random(-2,3);
+//  lv_soc -= 0.2;
+//}
+

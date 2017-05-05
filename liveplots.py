@@ -62,12 +62,13 @@ class ScrollingLinePlot:
 class BarChart:
     """ Single bar in a plot that can show a
         changing height value """
-    def __init__(self, row, col, rowspan=1, colspan=1, title="Bar Chart", ymin=0, ymax=100, ylabel="", color='r'):
+    def __init__(self, row, col, rowspan=1, colspan=1, title="Bar Chart", ymin=0, ymax=100, ylabel="", color='r', show_axes=True):
         self.axis = plt.subplot2grid(window_size, (row,col),
                                  rowspan=rowspan, colspan=colspan)
         self.axis.set_title(title)
         self.axis.set_ylabel(ylabel)
         self.axis.xaxis.set_visible(False)
+        self.axis.yaxis.set_visible(show_axes)
         self.axis.set_xlim(0, 10)
         self.axis.set_ylim(ymin, ymax)
         self.value = 0;
@@ -76,9 +77,12 @@ class BarChart:
             height = self.value,
             width = 8,
             color = color)[0]
+        self.color = color
 
-    def update(self, val):
+    def update(self, val, color=None):
         self.value = val
+        if color is not None:
+            self.bar.set_color(color)
         self.bar.set_height(self.value)
 
 class Dial:
