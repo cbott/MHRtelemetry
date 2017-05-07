@@ -49,8 +49,13 @@ def car_monitor(arduino, log):
     #13# [Brake Pedal Error] boolean
     #14# [Low Voltage Battery SOC] 0-120 /10
     SIZE = 15
+
+    # Create the window
     liveplot_init(3,5, "MHR17 Telemetry System")
+
+    # Add widgets
     engine_t = ScrollingLinePlot(row=0, col=3, title="Engine Temp.", ymin=0, ymax=255, width=25, ylabel="deg F")
+
     l_bat_t = ScrollingLinePlot(row=1, col=0, title="Left Battery Temp.", ymin=0, ymax=255, width=25, ylabel="deg F")
     r_bat_t = ScrollingLinePlot(row=2, col=0, title="Right Battery Temp.", ymin=0, ymax=255, width=25, ylabel="deg F")
 
@@ -72,8 +77,10 @@ def car_monitor(arduino, log):
     brake = BarChart(row=2, col=3, title="Brake Pedal %", ymin=0, ymax=100, ylabel="%")
     brake_err = BarChart(row=2, col=4, title="Brake Pedal Error", ymin=0, ymax=1, ylabel="", show_axes=False)
 
+    # Mainloop
     data = [ 0 for i in range(SIZE) ];
     while 1:
+        # Read in all messages from serial buffer
         for val in arduino.read():
             try:
                 vals = val.split()
@@ -82,6 +89,7 @@ def car_monitor(arduino, log):
             except (AttributeError, ValueError):
                 print "Received unexpected data [",val,"]"
         if len(data) == SIZE:
+            # Update widgets with new data
             log.write(strftime("[%H:%M:%S] ") + str(data) + "\n")
             engine_t.update(data[0])
             l_bat_t.update(data[1])
@@ -98,11 +106,12 @@ def car_monitor(arduino, log):
             brake.update(data[12])
             brake_err.update(1,color = 'r' if data[13] else 'g')
             lv_soc.update(data[14]/10.0)
+        # Refresh the window
         liveplot_update(0.1)
 
 if __name__ == "__main__":
     serial_port = ""
-    log_file = "TelemetryData.txt"
+    log_file = "Log.txt"
 
     if len(sys.argv) == 2:
         serial_port = sys.argv[1]

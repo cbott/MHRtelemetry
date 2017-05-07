@@ -23,8 +23,10 @@ warnings.filterwarnings("ignore", category=mplDeprecation)
 def liveplot_init(rows, cols, title="LivePlot Window"):
     """ Initialize the Matplotlib window """
     global window_size
-    fig = plt.figure()
+
+    fig = plt.figure(figsize=(12,6), facecolor=(0.7,0.7,0.7))
     fig.canvas.set_window_title(title)
+
     window_size = (rows, cols)
 
     plt.ion() #Make plot interactive
@@ -73,9 +75,9 @@ class BarChart:
         self.axis.set_ylim(ymin, ymax)
         self.value = 0;
         self.bar = self.axis.bar(
-            left = 1,
+            left = 0,
             height = self.value,
-            width = 8,
+            width = 20,
             color = color)[0]
         self.color = color
 
