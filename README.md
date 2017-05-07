@@ -4,7 +4,6 @@
 Basic command line usage: `python telemetrymonitor.py <Arduino Serial Port> <log file>`
 
 ### Requirements
-Requires the Python matplotlib library, see [here](https://matplotlib.org/users/installing.html) for installation
-
-
-Note: Currently only tested on Windows
+- Python 2 or 3
+- Python serial library: Install with `pip install pyserial`
+- Python matplotlib library: See [here](https://matplotlib.org/users/installing.html) for installation
